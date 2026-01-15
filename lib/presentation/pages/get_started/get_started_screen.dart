@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/app/resources/app_assets.dart';
 import 'package:course/app/resources/app_value.dart';
-import 'package:course/app/services/user_preferences_service.dart';
+import 'package:course/app/services/app_preferences.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:sizer/sizer.dart';
 
@@ -18,7 +18,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> with SingleTickerPr
   bool _showAuthButtons = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  final _prefsService = getIt<UserPreferencesService>();
+  final _prefsService = getIt<AppPreferences>();
 
   @override
   void initState() {

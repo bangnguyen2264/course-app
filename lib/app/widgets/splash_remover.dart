@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:course/app/services/secure_storage_service.dart';
+import 'package:course/app/services/secure_storage.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/app/resources/app_assets.dart';
-import 'package:course/app/services/secure_storage_service.dart';
+import 'package:course/app/services/secure_storage.dart';
 import 'package:course/app/constants/app_routes.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:sizer/sizer.dart';
@@ -27,7 +27,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
 
     if (!mounted) return;
 
-    final secureStorage = getIt<SecureStorageService>();
+    final secureStorage = getIt<SecureStorage>();
     final hasToken = await secureStorage.hasValidToken();
 
     if (!mounted) return;
@@ -43,10 +43,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: AppColor.appGradient),
-        
-      ),
+      body: Container(decoration: BoxDecoration(gradient: AppColor.appGradient)),
     );
   }
 }

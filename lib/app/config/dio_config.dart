@@ -1,16 +1,19 @@
+import 'package:course/app/services/secure_storage.dart';
+import 'package:course/domain/services/auth_service.dart';
 import 'package:dio/dio.dart';
-import 'package:course/app/services/secure_storage_service.dart';
 import 'package:course/app/di/dependency_injection.dart';
 
 class DioConfig {
   static Dio? _dio;
+  static bool _isRefreshing = false;
+  static final List<Future<Response>> _requestsToRetry = [];
 
   static Dio getInstance() {
     if (_dio != null) return _dio!;
 
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.example.com/api/v1', // TODO: Thay đổi base URL
+        baseUrl: 'http://192.0.0.1:8081/api', // TODO: Thay đổi base URL
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -31,7 +34,7 @@ class DioConfig {
   static Interceptor _authInterceptor() {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final secureStorage = getIt<SecureStorageService>();
+        final secureStorage = getIt<SecureStorage>();
         final token = await secureStorage.getAccessToken();
 
         if (token != null && token.isNotEmpty) {
@@ -41,13 +44,22 @@ class DioConfig {
         return handler.next(options);
       },
       onError: (error, handler) async {
-        // Handle token refresh logic here
-        if (error.response?.statusCode == 401) {
-          // TODO: Implement token refresh logic
-          // final refreshed = await _refreshToken();
-          // if (refreshed) {
-          //   return handler.resolve(await _retry(error.requestOptions));
-          // }
+        // Handle token refresh logic on 401
+        if (error.response?.statusCode == 401 && !_isRefreshing) {
+          _isRefreshing = true;
+          try {
+            // Refresh token
+            final authService = getIt<AuthService>();
+            final newToken = await authService.refreshToken();
+
+            // Retry original request với token mới
+            _isRefreshing = false;
+            return handler.resolve(await _retry(error.requestOptions));
+          } catch (e) {
+            _isRefreshing = false;
+            // Token refresh failed, redirect to login
+            return handler.next(error);
+          }
         }
         return handler.next(error);
       },
