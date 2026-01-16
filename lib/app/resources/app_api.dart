@@ -1,11 +1,12 @@
 /// API Endpoints Constants
 ///
-/// Tổ chức theo controllers từ backend
+/// Dùng cho Retrofit với @Path()
 abstract class AppApi {
   // ============================================================================
   // BASE URL
   // ============================================================================
-  static const String baseUrl = 'http://127.0.0.1:8081/api'; // TODO: Thay đổi base URL
+  static const String baseUrl = 'http://10.0.2.2:8081';
+  static const String prefix = '/api';
 
   // ============================================================================
   // AUTH CONTROLLER
@@ -18,10 +19,10 @@ abstract class AppApi {
   // USER CONTROLLER
   // ============================================================================
   static const String userList = '/user';
-  static String userById(dynamic id) => '/user/$id';
-  static String userDelete(dynamic id) => '/user/$id';
-  static String userUpdate(dynamic id) => '/user/$id';
-  static String userChangePassword(dynamic id) => '/user/$id/change-password';
+  static const String userById = '/user/{id}';
+  static const String userDelete = '/user/{id}';
+  static const String userUpdate = '/user/{id}';
+  static const String userChangePassword = '/user/{id}/change-password';
 
   // ============================================================================
   // SUBJECT CONTROLLER
@@ -29,9 +30,9 @@ abstract class AppApi {
   static const String subjectList = '/subject';
   static const String subjectCreate = '/subject';
   static const String subjectBatchCreate = '/subject/batch';
-  static String subjectById(dynamic id) => '/subject/$id';
-  static String subjectDelete(dynamic id) => '/subject/$id';
-  static String subjectUpdate(dynamic id) => '/subject/$id';
+  static const String subjectById = '/subject/{id}';
+  static const String subjectDelete = '/subject/{id}';
+  static const String subjectUpdate = '/subject/{id}';
 
   // ============================================================================
   // CHAPTER CONTROLLER
@@ -39,9 +40,9 @@ abstract class AppApi {
   static const String chapterList = '/chapter';
   static const String chapterCreate = '/chapter';
   static const String chapterBatchCreate = '/chapter/batch';
-  static String chapterById(dynamic id) => '/chapter/$id';
-  static String chapterDelete(dynamic id) => '/chapter/$id';
-  static String chapterUpdate(dynamic id) => '/chapter/$id';
+  static const String chapterById = '/chapter/{id}';
+  static const String chapterDelete = '/chapter/{id}';
+  static const String chapterUpdate = '/chapter/{id}';
 
   // ============================================================================
   // LESSON CONTROLLER
@@ -49,9 +50,9 @@ abstract class AppApi {
   static const String lessonList = '/lesson';
   static const String lessonCreate = '/lesson';
   static const String lessonBatchCreate = '/lesson/batch';
-  static String lessonById(dynamic id) => '/lesson/$id';
-  static String lessonDelete(dynamic id) => '/lesson/$id';
-  static String lessonUpdate(dynamic id) => '/lesson/$id';
+  static const String lessonById = '/lesson/{id}';
+  static const String lessonDelete = '/lesson/{id}';
+  static const String lessonUpdate = '/lesson/{id}';
 
   // ============================================================================
   // LESSON SECTION CONTROLLER
@@ -59,40 +60,40 @@ abstract class AppApi {
   static const String lessonSectionList = '/lesson-section';
   static const String lessonSectionCreate = '/lesson-section';
   static const String lessonSectionBatchCreate = '/lesson-section/batch';
-  static String lessonSectionById(dynamic id) => '/lesson-section/$id';
-  static String lessonSectionDelete(dynamic id) => '/lesson-section/$id';
-  static String lessonSectionUpdate(dynamic id) => '/lesson-section/$id';
+  static const String lessonSectionById = '/lesson-section/{id}';
+  static const String lessonSectionDelete = '/lesson-section/{id}';
+  static const String lessonSectionUpdate = '/lesson-section/{id}';
 
   // ============================================================================
   // QUIZ CONTROLLER
   // ============================================================================
   static const String quizList = '/quiz';
   static const String quizCreate = '/quiz';
-  static String quizById(dynamic id) => '/quiz/$id';
-  static String quizDelete(dynamic id) => '/quiz/$id';
-  static String quizUpdate(dynamic id) => '/quiz/$id';
+  static const String quizById = '/quiz/{id}';
+  static const String quizDelete = '/quiz/{id}';
+  static const String quizUpdate = '/quiz/{id}';
 
   // ============================================================================
   // EXAM CONTROLLER
   // ============================================================================
   static const String examList = '/exam';
   static const String examCreate = '/exam';
-  static String examById(dynamic id) => '/exam/$id';
-  static String examDelete(dynamic id) => '/exam/$id';
-  static String examUpdate(dynamic id) => '/exam/$id';
+  static const String examById = '/exam/{id}';
+  static const String examDelete = '/exam/{id}';
+  static const String examUpdate = '/exam/{id}';
 
   // ============================================================================
   // EXAM RESULT CONTROLLER
   // ============================================================================
   static const String examResultList = '/exam-result';
   static const String examResultSubmit = '/exam-result/submit';
-  static String examResultById(dynamic id) => '/exam-result/$id';
+  static const String examResultById = '/exam-result/{id}';
 
   // ============================================================================
   // MEDIA CONTROLLER
   // ============================================================================
   static const String mediaUploadPublic = '/media/upload/public';
   static const String mediaUploadPrivate = '/media/upload/private';
-  static String mediaPublicById(dynamic id) => '/media/public/$id';
-  static String mediaPrivateById(dynamic id) => '/media/private/$id';
+  static const String mediaPublicById = '/media/public/{id}';
+  static const String mediaPrivateById = '/media/private/{id}';
 }

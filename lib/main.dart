@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:course/app/theme/app_theme.dart';
 import 'package:course/app/resources/app_route.dart';
 import 'package:course/app/widgets/splash_remover.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -15,9 +16,7 @@ void main() async {
   // Setup dependencies
   await setupDependencies();
 
-  // DON'T remove splash here - let SplashRemover do it after first frame
-
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

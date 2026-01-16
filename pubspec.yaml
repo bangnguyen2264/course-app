@@ -31,6 +31,11 @@ dependencies:
   responsive_grid_layout: ^1.0.1
   flutter_gutter: ^2.2.0
   flutter_svg: ^2.2.3
+  json_annotation: ^4.9.0
+  json_serializable: ^6.11.2
+  flutter_riverpod: ^3.1.0
+  validators: ^3.0.0
+  pretty_dio_logger: ^1.4.0
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +44,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.2
+  retrofit_generator: ^10.2.1
+  build_runner: ^2.10.5
+  
 
 flutter:
 

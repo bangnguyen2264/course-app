@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:course/app/resources/app_color.dart';
-import 'package:course/app/resources/app_assets.dart';
 import 'package:course/app/services/secure_storage.dart';
 import 'package:course/app/constants/app_routes.dart';
 import 'package:course/app/di/dependency_injection.dart';
-import 'package:sizer/sizer.dart';
 
-class SplashLoadingScreen extends StatefulWidget {
-  const SplashLoadingScreen({Key? key}) : super(key: key);
+class SplashLoadingPage extends StatefulWidget {
+  const SplashLoadingPage({Key? key}) : super(key: key);
 
   @override
-  State<SplashLoadingScreen> createState() => _SplashLoadingScreenState();
+  State<SplashLoadingPage> createState() => _SplashLoadingPageState();
 }
 
-class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
+class _SplashLoadingPageState extends State<SplashLoadingPage> {
   @override
   void initState() {
     super.initState();

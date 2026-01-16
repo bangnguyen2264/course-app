@@ -8,6 +8,7 @@ abstract class AppRoutes {
 
   // Main routes
   static const String home = '/home';
+  static const String exam = '/exam';
   static const String splash = '/';
 
   // Course routes

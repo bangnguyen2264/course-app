@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/app/resources/app_style.dart';
 
@@ -33,6 +34,13 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColor.primary,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.white,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -216,6 +224,13 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Color(0xFF2A2A2A),
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: Color(0xFF1E1E1E),
+          systemNavigationBarIconBrightness: Brightness.light,
+        ),
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 18,

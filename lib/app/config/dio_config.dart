@@ -1,7 +1,8 @@
 import 'package:course/app/services/secure_storage.dart';
-import 'package:course/domain/services/auth_service.dart';
+import 'package:course/domain/usecases/refresh_token_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:course/app/di/dependency_injection.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioConfig {
   static Dio? _dio;
@@ -13,7 +14,7 @@ class DioConfig {
 
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.0.0.1:8081/api', // TODO: Thay đổi base URL
+        baseUrl: 'http://10.0.2.2:8081/api', // TODO: Thay đổi base URL
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -25,7 +26,24 @@ class DioConfig {
     );
 
     // Add interceptors
-    _dio!.interceptors.addAll([_authInterceptor(), _loggingInterceptor(), _errorInterceptor()]);
+    _dio!.interceptors.addAll([
+      _authInterceptor(),
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        compact: false, // true = compact, false = expanded
+        // Filter: chỉ log error và response từ server
+        filter: (options, args) {
+          // Có thể filter theo endpoint nếu cần
+          // return !options.uri.path.contains('/refresh-token');
+          return true;
+        },
+      ),
+      _errorInterceptor(),
+    ]);
 
     return _dio!;
   }
@@ -49,8 +67,8 @@ class DioConfig {
           _isRefreshing = true;
           try {
             // Refresh token
-            final authService = getIt<AuthService>();
-            final newToken = await authService.refreshToken();
+            final refreshTokenUsecase = getIt<RefreshTokenUsecase>();
+            final newToken = await refreshTokenUsecase.refreshToken();
 
             // Retry original request với token mới
             _isRefreshing = false;
@@ -100,6 +118,7 @@ class DioConfig {
     return InterceptorsWrapper(
       onError: (error, handler) {
         String errorMessage = 'Đã xảy ra lỗi';
+        Map<String, dynamic>? fieldErrors;
 
         if (error.type == DioExceptionType.connectionTimeout ||
             error.type == DioExceptionType.sendTimeout ||
@@ -108,24 +127,83 @@ class DioConfig {
         } else if (error.type == DioExceptionType.connectionError) {
           errorMessage = 'Không có kết nối internet';
         } else if (error.response != null) {
+          final responseData = error.response!.data;
+
           switch (error.response!.statusCode) {
             case 400:
-              errorMessage = error.response!.data['message'] ?? 'Yêu cầu không hợp lệ';
+              // Xử lý validation error với cấu trúc mới
+              if (responseData is Map<String, dynamic>) {
+                // Lấy message từ error object
+                if (responseData['error'] != null && responseData['error']['message'] != null) {
+                  errorMessage = responseData['error']['message'];
+                }
+
+                // Lấy field errors
+                if (responseData['fields'] != null) {
+                  fieldErrors = Map<String, dynamic>.from(responseData['fields']);
+
+                  // Tạo message từ field errors
+                  final fieldMessages = fieldErrors.entries
+                      .map((e) => '${_getFieldLabel(e.key)}: ${e.value}')
+                      .join('\n');
+
+                  if (fieldMessages.isNotEmpty) {
+                    errorMessage = fieldMessages;
+                  }
+                }
+              } else {
+                errorMessage = 'Yêu cầu không hợp lệ';
+              }
               break;
+
             case 401:
-              errorMessage = 'Phiên đăng nhập hết hạn';
+              if (responseData is Map<String, dynamic> &&
+                  responseData['error'] != null &&
+                  responseData['error']['message'] != null) {
+                errorMessage = responseData['error']['message'];
+              } else {
+                errorMessage = 'Phiên đăng nhập hết hạn';
+              }
               break;
+
             case 403:
-              errorMessage = 'Không có quyền truy cập';
+              if (responseData is Map<String, dynamic> &&
+                  responseData['error'] != null &&
+                  responseData['error']['message'] != null) {
+                errorMessage = responseData['error']['message'];
+              } else {
+                errorMessage = 'Không có quyền truy cập';
+              }
               break;
+
             case 404:
-              errorMessage = 'Không tìm thấy dữ liệu';
+              if (responseData is Map<String, dynamic> &&
+                  responseData['error'] != null &&
+                  responseData['error']['message'] != null) {
+                errorMessage = responseData['error']['message'];
+              } else {
+                errorMessage = 'Không tìm thấy dữ liệu';
+              }
               break;
+
             case 500:
-              errorMessage = 'Lỗi server. Vui lòng thử lại sau';
+              if (responseData is Map<String, dynamic> &&
+                  responseData['error'] != null &&
+                  responseData['error']['message'] != null) {
+                errorMessage = responseData['error']['message'];
+              } else {
+                errorMessage = 'Lỗi server. Vui lòng thử lại sau';
+              }
               break;
+
             default:
-              errorMessage = error.response!.data['message'] ?? 'Đã xảy ra lỗi';
+              if (responseData is Map<String, dynamic> &&
+                  responseData['error'] != null &&
+                  responseData['error']['message'] != null) {
+                errorMessage = responseData['error']['message'];
+              } else {
+                errorMessage = 'Đã xảy ra lỗi';
+              }
           }
         }
 
@@ -140,6 +218,20 @@ class DioConfig {
         );
       },
     );
+  }
+
+  // Convert field name sang tiếng Việt
+  static String _getFieldLabel(String fieldName) {
+    const fieldLabels = {
+      'fullName': 'Họ tên',
+      'email': 'Email',
+      'password': 'Mật khẩu',
+      'phoneNumber': 'Số điện thoại',
+      'gender': 'Giới tính',
+      'dob': 'Ngày sinh',
+      'address': 'Địa chỉ',
+    };
+    return fieldLabels[fieldName] ?? fieldName;
   }
 
   // Retry request after token refresh

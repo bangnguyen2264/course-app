@@ -1,3 +1,4 @@
+import 'package:course/app/constants/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:course/app/resources/app_color.dart';
@@ -5,16 +6,15 @@ import 'package:course/app/resources/app_assets.dart';
 import 'package:course/app/resources/app_value.dart';
 import 'package:course/app/services/app_preferences.dart';
 import 'package:course/app/di/dependency_injection.dart';
-import 'package:sizer/sizer.dart';
 
-class GetStartedScreen extends StatefulWidget {
-  const GetStartedScreen({Key? key}) : super(key: key);
+class GetStartedPage extends StatefulWidget {
+  const GetStartedPage({Key? key}) : super(key: key);
 
   @override
-  State<GetStartedScreen> createState() => _GetStartedScreenState();
+  State<GetStartedPage> createState() => _GetStartedPageState();
 }
 
-class _GetStartedScreenState extends State<GetStartedScreen> with SingleTickerProviderStateMixin {
+class _GetStartedPageState extends State<GetStartedPage> with SingleTickerProviderStateMixin {
   bool _showAuthButtons = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -28,7 +28,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> with SingleTickerPr
       vsync: this,
     );
     _fadeAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
-    // _checkFirstTime();
+    _checkFirstTime();
   }
 
   @override
@@ -58,11 +58,11 @@ class _GetStartedScreenState extends State<GetStartedScreen> with SingleTickerPr
   }
 
   void _navigateToLogin() {
-    context.go('/login');
+    context.push(AppRoutes.login);
   }
 
   void _navigateToRegister() {
-    context.go('/register');
+    context.push(AppRoutes.register);
   }
 
   @override

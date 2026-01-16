@@ -1,9 +1,14 @@
+import 'package:course/presentation/pages/home/home_page.dart';
+import 'package:course/presentation/pages/login/login_page.dart';
+import 'package:course/presentation/pages/register/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:course/app/constants/app_routes.dart';
-import 'package:course/presentation/pages/get_started/get_started_screen.dart';
-import 'package:course/presentation/pages/home/home_screen.dart';
-import 'package:course/presentation/pages/splash/splash_loading_screen.dart';
+import 'package:course/presentation/pages/get_started/get_started_page.dart';
+import 'package:course/presentation/pages/splash_loading_page.dart';
+import 'package:course/presentation/pages/dashboard/dashboard_shell_page.dart';
+import 'package:course/presentation/pages/exam/exam_page.dart';
+import 'package:course/presentation/pages/profile/profile_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -11,25 +16,19 @@ class AppRouter {
     debugLogDiagnostics: true,
     routes: [
       // Splash route - kiểm tra auth và redirect
-      GoRoute(path: AppRoutes.splash, builder: (context, state) => const SplashLoadingScreen()),
+      GoRoute(path: AppRoutes.splash, builder: (context, state) => const SplashLoadingPage()),
 
       // Auth routes
       GoRoute(
         path: AppRoutes.getStarted,
         name: 'get-started',
-        builder: (context, state) => const GetStartedScreen(),
+        builder: (context, state) => const GetStartedPage(),
       ),
-      GoRoute(
-        path: AppRoutes.login,
-        name: 'login',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Login Screen - TODO'))),
-      ),
+      GoRoute(path: AppRoutes.login, name: 'login', builder: (context, state) => LoginPage()),
       GoRoute(
         path: AppRoutes.register,
         name: 'register',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Register Screen - TODO'))),
+        builder: (context, state) => RegisterPage(),
       ),
       GoRoute(
         path: AppRoutes.forgotPassword,
@@ -38,8 +37,27 @@ class AppRouter {
             const Scaffold(body: Center(child: Text('Forgot Password Screen - TODO'))),
       ),
 
-      // Main routes
-      GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen()),
+      // Main routes (Dashboard Shell)
+      ShellRoute(
+        builder: (context, state, child) => DashboardShellPage(child: child),
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            builder: (context, state) => const HomePage(),
+          ),
+          GoRoute(
+            path: AppRoutes.exam,
+            name: 'exam',
+            builder: (context, state) => const ExamPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            builder: (context, state) => const ProfilePage(),
+          ),
+        ],
+      ),
 
       // Course routes
       GoRoute(
@@ -73,11 +91,6 @@ class AppRouter {
       ),
 
       // Profile routes
-      GoRoute(
-        path: AppRoutes.profile,
-        name: 'profile',
-        builder: (context, state) => const Scaffold(body: Center(child: Text('Profile - TODO'))),
-      ),
       GoRoute(
         path: AppRoutes.editProfile,
         name: 'edit-profile',
