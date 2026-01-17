@@ -5,7 +5,7 @@ abstract class AppApi {
   // ============================================================================
   // BASE URL
   // ============================================================================
-  static const String baseUrl = 'http://10.0.2.2:8081';
+  static const String baseUrl = 'https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net';
   static const String prefix = '/api';
 
   // ============================================================================

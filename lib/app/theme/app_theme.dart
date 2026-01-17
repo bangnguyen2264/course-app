@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/app/resources/app_style.dart';
+import 'package:course/presentation/widgets/custom_dialog.dart';
 
 class AppTheme {
   // Light Theme
@@ -189,8 +190,31 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
         elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        titleTextStyle: const TextStyle(
+          color: AppColor.titleText,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
+        contentTextStyle: TextStyle(color: AppColor.text, fontSize: 14, height: 1.5),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       ),
+
+      // Custom Dialog Theme Extension
+      extensions: [
+        const CustomDialogTheme(
+          iconSize: 48.0,
+          titleStyle: TextStyle(
+            color: AppColor.titleText,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+          contentStyle: TextStyle(color: AppColor.text, fontSize: 14, height: 1.5),
+          contentPadding: EdgeInsets.fromLTRB(24, 16, 24, 24),
+          actionsPadding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+          elevation: 8,
+        ),
+      ],
     );
   }
 
@@ -248,6 +272,32 @@ class AppTheme {
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
+
+      // Dialog Theme
+      dialogTheme: DialogThemeData(
+        backgroundColor: const Color(0xFF2A2A2A),
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
+        contentTextStyle: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      ),
+
+      // Custom Dialog Theme Extension
+      extensions: [
+        const CustomDialogTheme(
+          iconSize: 48.0,
+          titleStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+          contentStyle: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+          contentPadding: EdgeInsets.fromLTRB(24, 16, 24, 24),
+          actionsPadding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+          elevation: 8,
+        ),
+      ],
     );
   }
 }

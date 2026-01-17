@@ -1,11 +1,11 @@
 import 'package:course/app/constants/app_routes.dart';
 import 'package:course/presentation/controllers/profile/profile_state.dart';
 import 'package:course/presentation/controllers/profile/profile_controller.dart';
-import 'package:course/presentation/widgets/profile/logout_confirm_dialog.dart';
-import 'package:course/presentation/widgets/profile/profile_avatar.dart';
-import 'package:course/presentation/widgets/profile/profile_info_card.dart';
-import 'package:course/presentation/widgets/profile/profile_states_widget.dart';
-import 'package:course/presentation/widgets/profile/settings_menu_item.dart';
+import 'package:course/presentation/pages/profile/widgets/logout_confirm_dialog.dart';
+import 'package:course/presentation/pages/profile/widgets/profile_avatar.dart';
+import 'package:course/presentation/pages/profile/widgets/profile_info_card.dart';
+import 'package:course/presentation/pages/profile/widgets/profile_states_widget.dart';
+import 'package:course/presentation/pages/profile/widgets/settings_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

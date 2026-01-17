@@ -1,3 +1,4 @@
+import 'package:course/app/resources/app_api.dart';
 import 'package:course/app/services/secure_storage.dart';
 import 'package:course/domain/usecases/refresh_token_usecase.dart';
 import 'package:dio/dio.dart';
@@ -7,14 +8,13 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class DioConfig {
   static Dio? _dio;
   static bool _isRefreshing = false;
-  static final List<Future<Response>> _requestsToRetry = [];
 
   static Dio getInstance() {
     if (_dio != null) return _dio!;
 
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:8081/api', // TODO: Thay đổi base URL
+        baseUrl: AppApi.baseUrl+AppApi.prefix, // TODO: Thay đổi base URL
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),

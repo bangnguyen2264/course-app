@@ -6,7 +6,7 @@ import 'package:course/domain/entities/user/user.dart';
 import 'package:course/domain/usecases/get_user_usecase.dart';
 import 'package:course/presentation/controllers/home/home_controller.dart';
 import 'package:course/presentation/controllers/home/home_state.dart';
-import 'package:course/presentation/widgets/profile/profile_avatar.dart';
+import 'package:course/presentation/pages/profile/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
