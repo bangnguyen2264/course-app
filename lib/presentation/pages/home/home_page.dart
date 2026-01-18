@@ -1,14 +1,17 @@
 import 'dart:async';
 
+import 'package:course/app/constants/app_routes.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/domain/entities/user/user.dart';
 import 'package:course/domain/usecases/get_user_usecase.dart';
 import 'package:course/presentation/controllers/home/home_controller.dart';
 import 'package:course/presentation/controllers/home/home_state.dart';
+import 'package:course/presentation/pages/home/widgets/subject_card.dart';
 import 'package:course/presentation/pages/profile/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -315,101 +318,15 @@ class HomePage extends HookConsumerWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final subject = state.subjects[index];
-              return _buildCourseCard(
-                title: subject.name,
-                price: 'Miễn phí',
-                rating: 4.5,
-                author: 'By Admin',
-                level: 'All Level',
+              return SubjectCard(
+                subject: subject,
+                onTap: () {
+                  context.push(AppRoutes.chapter, extra: subject);
+                },
               );
             },
           ),
       ],
-    );
-  }
-
-  Widget _buildCourseCard({
-    required String title,
-    required String price,
-    required double rating,
-    required String author,
-    required String level,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Course info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColor.titleText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    color: AppColor.titleText,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: AppColor.yellowText, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      rating.toString(),
-                      style: const TextStyle(
-                        color: AppColor.titleText,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '• $author • $level',
-                      style: TextStyle(color: AppColor.statisticLabel, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Course image placeholder
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColor.notification.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 32),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,7 +1,9 @@
+import 'package:course/app/resources/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:course/app/theme/app_theme.dart';
 import 'package:course/app/resources/app_route.dart';
 import 'package:course/app/widgets/splash_remover.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 import 'package:course/app/di/dependency_injection.dart';

@@ -3,10 +3,12 @@ import 'package:course/app/services/secure_storage.dart';
 import 'package:course/domain/repositories/auth_repository.dart';
 import 'package:course/domain/repositories/chapter_reposirtory.dart';
 import 'package:course/domain/repositories/file_repository.dart';
+import 'package:course/domain/repositories/lesson_section_repository.dart';
 import 'package:course/domain/repositories/subject_repository.dart';
 import 'package:course/domain/repositories/user_repository.dart';
 import 'package:course/domain/usecases/get_avatar_usecase.dart';
 import 'package:course/domain/usecases/get_chapter_usecase.dart';
+import 'package:course/domain/usecases/get_lesson_section_usecase.dart';
 import 'package:course/domain/usecases/get_subject_usecase.dart';
 import 'package:course/domain/usecases/get_user_usecase.dart';
 import 'package:course/domain/usecases/login_usecase.dart';
@@ -38,12 +40,11 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<FileRepository>(() => FileRepository(getIt<Dio>(), getIt<SecureStorage>()));
   getIt.registerFactory<SubjectRepository>(() => SubjectRepository(getIt<Dio>()));
   getIt.registerFactory<ChapterRepository>(() => ChapterRepository(getIt<Dio>()));
+  getIt.registerFactory<LessonSectionRepository>(() => LessonSectionRepository(getIt<Dio>()));
   // getIt.registerFactory<LessonRepository>(() => LessonRepository(getIt<Dio>()));
-  // getIt.registerFactory<LessonSectionRepository>(() => LessonSectionRepository(getIt<Dio>()));
   // getIt.registerFactory<QuizRepository>(() => QuizRepository(getIt<Dio>()));
   // getIt.registerFactory<ExamRepository>(() => ExamRepository(getIt<Dio>()));
   // getIt.registerFactory<ExamResultRepository>(() => ExamResultRepository(getIt<Dio>()));
-
 
   // UseCases - Auth
   getIt.registerFactory<LoginUseCase>(
@@ -71,4 +72,8 @@ Future<void> setupDependencies() async {
   // UseCases - Chapter
   getIt.registerFactory<GetChapterUsecase>(() => GetChapterUsecase(getIt<ChapterRepository>()));
 
+  // UseCases - Lesson Section
+  getIt.registerFactory<GetLessonSectionUsecase>(
+    () => GetLessonSectionUsecase(getIt<LessonSectionRepository>()),
+  );
 }

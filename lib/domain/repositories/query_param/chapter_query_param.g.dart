@@ -11,7 +11,7 @@ Map<String, dynamic> _$ChapterQueryParamsToJson(ChapterQueryParams instance) =>
       'page': ?instance.page,
       'entry': ?instance.entry,
       'field': instance.field,
-      'sort': instance.sort,
+      'sort': BaseQueryParams.sortOrderToJson(instance.sort),
       'search': ?instance.search,
       'subjectId': ?instance.subjectId,
     };

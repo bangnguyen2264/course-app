@@ -1,4 +1,5 @@
 import 'package:course/app/services/secure_storage.dart';
+import 'package:course/domain/entities/auth/login/login_response.dart';
 import 'package:course/domain/repositories/auth_repository.dart';
 
 class RefreshTokenUsecase {
@@ -7,7 +8,7 @@ class RefreshTokenUsecase {
 
   RefreshTokenUsecase(this._authRepository, this._secureStorage);
   // Refresh token
-  Future<String> refreshToken() async {
+  Future<LoginResponse> refreshToken() async {
     final refreshToken = await _secureStorage.getRefreshToken();
     if (refreshToken == null) throw Exception('No refresh token');
     
@@ -17,7 +18,7 @@ class RefreshTokenUsecase {
     await _secureStorage.setAccessToken(response.token);
     await _secureStorage.setRefreshToken(response.refreshToken);
     
-    return response.token;
+    return response;
   }
 
   // Logout

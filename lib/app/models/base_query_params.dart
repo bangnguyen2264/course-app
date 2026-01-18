@@ -5,11 +5,24 @@ part 'base_query_params.g.dart';
 /// Enum cho thứ tự sắp xếp
 enum SortOrder {
   @JsonValue('ASC')
-  ASC,
+  asc('ASC'),
   @JsonValue('DESC')
-  DESC;
+  desc('DESC');
 
-  String get value => name;
+  final String value;
+  const SortOrder(this.value);
+
+  /// Parse từ string
+  static SortOrder fromString(String? value) {
+    if (value == null) return SortOrder.asc;
+    switch (value.toUpperCase()) {
+      case 'DESC':
+        return SortOrder.desc;
+      case 'ASC':
+      default:
+        return SortOrder.asc;
+    }
+  }
 }
 
 /// Base class chứa các param phân trang và sắp xếp chung
@@ -23,22 +36,23 @@ class BaseQueryParams {
 
   final String field;
 
-  final String sort;
+  @JsonKey(toJson: sortOrderToJson)
+  final SortOrder sort;
 
-  const BaseQueryParams({this.page = 0, this.entry = 10, this.field = 'id', String? sort})
-    : sort = sort ?? 'ASC';
-
-  const BaseQueryParams.withSortOrder({
+  const BaseQueryParams({
     this.page = 0,
     this.entry = 10,
     this.field = 'id',
-    SortOrder sortOrder = SortOrder.ASC,
-  }) : sort = sortOrder == SortOrder.ASC ? 'ASC' : 'DESC';
+    this.sort = SortOrder.asc,
+  });
+
+  /// Convert SortOrder to JSON string
+  static String sortOrderToJson(SortOrder sort) => sort.value;
 
   Map<String, dynamic> toJson() => _$BaseQueryParamsToJson(this);
 
   /// Copy with new values
-  BaseQueryParams copyWith({int? page, int? entry, String? field, String? sort}) {
+  BaseQueryParams copyWith({int? page, int? entry, String? field, SortOrder? sort}) {
     return BaseQueryParams(
       page: page ?? this.page,
       entry: entry ?? this.entry,
@@ -47,4 +61,3 @@ class BaseQueryParams {
     );
   }
 }
-

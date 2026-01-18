@@ -13,8 +13,13 @@ abstract class AppRoutes {
 
   // Course routes
   static const String courseList = '/courses';
-  static const String courseDetail = '/courses/:id';
-  static const String courseLesson = '/courses/:courseId/lessons/:lessonId';
+
+
+  // Chapter routes
+  static const String chapter = '/chapters';
+
+  // Lesson section routes
+  static const String lessonSection = '/lesson-sections';
 
   // Quiz routes
   static const String quizList = '/quizzes';

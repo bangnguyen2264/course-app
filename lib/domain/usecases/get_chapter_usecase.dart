@@ -1,3 +1,4 @@
+import 'package:course/app/models/base_query_params.dart';
 import 'package:course/domain/entities/api_response.dart';
 import 'package:course/domain/entities/chapter/chapter.dart';
 import 'package:course/domain/repositories/chapter_reposirtory.dart';
@@ -14,7 +15,7 @@ class GetChapterUsecase {
     int? page,
     int? entry,
     String? field = 'id',
-    String? sort,
+    SortOrder sort = SortOrder.asc,
   }) async {
     return await _chapterRepository.getChapters(
       ChapterQueryParams(
@@ -27,5 +28,4 @@ class GetChapterUsecase {
       ),
     );
   }
-
 }

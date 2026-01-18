@@ -1,7 +1,8 @@
 import 'package:course/app/models/base_query_params.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'chapter_query_param.g.dart';
-/// Query params với thêm filter name và status
+
+/// Query params cho Chapter API
 @JsonSerializable(createFactory: false)
 class ChapterQueryParams extends BaseQueryParams {
   @JsonKey(includeIfNull: false)
@@ -29,7 +30,7 @@ class ChapterQueryParams extends BaseQueryParams {
     int? page,
     int? entry,
     String? field,
-    String? sort,
+    SortOrder? sort,
   }) {
     return ChapterQueryParams(
       search: search ?? this.search,

@@ -1,7 +1,8 @@
 import 'package:course/app/models/base_query_params.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'subject_query_param.g.dart';
-/// Query params với thêm filter name và status
+
+/// Query params cho Subject API
 @JsonSerializable(createFactory: false)
 class SubjectQueryParams extends BaseQueryParams {
   @JsonKey(includeIfNull: false)
@@ -29,7 +30,7 @@ class SubjectQueryParams extends BaseQueryParams {
     int? page,
     int? entry,
     String? field,
-    String? sort,
+    SortOrder? sort,
   }) {
     return SubjectQueryParams(
       name: name ?? this.name,

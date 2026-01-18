@@ -8,12 +8,16 @@ part of 'lesson.dart';
 
 Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
   id: (json['id'] as num).toInt(),
+  chapterId: (json['chapterId'] as num?)?.toInt(),
   title: json['title'] as String,
   description: json['description'] as String?,
+  position: (json['position'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
   'id': instance.id,
+  'chapterId': instance.chapterId,
   'title': instance.title,
   'description': instance.description,
+  'position': instance.position,
 };

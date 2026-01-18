@@ -1,4 +1,8 @@
+import 'package:course/domain/entities/lesson/lesson.dart';
+import 'package:course/domain/entities/subject/subject.dart';
+import 'package:course/presentation/pages/chapter/chapter_page.dart';
 import 'package:course/presentation/pages/home/home_page.dart';
+import 'package:course/presentation/pages/lesson_detail/lesson_detail_page.dart';
 import 'package:course/presentation/pages/login/login_page.dart';
 import 'package:course/presentation/pages/register/register_page.dart';
 import 'package:flutter/material.dart';
@@ -66,12 +70,30 @@ class AppRouter {
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('Course List - TODO'))),
       ),
+
+      // Chapter routes
       GoRoute(
-        path: AppRoutes.courseDetail,
-        name: 'course-detail',
+        path: AppRoutes.chapter,
+        name: 'chapter',
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return Scaffold(body: Center(child: Text('Course Detail $id - TODO')));
+          final subject = state.extra as Subject?;
+          if (subject == null) {
+            return const Scaffold(body: Center(child: Text('Subject not found')));
+          }
+          return ChapterPage(subject: subject);
+        },
+      ),
+
+      // Lesson Detail routes
+      GoRoute(
+        path: AppRoutes.lessonSection,
+        name: 'lesson-section',
+        builder: (context, state) {
+          final lesson = state.extra as Lesson?;
+          if (lesson == null) {
+            return const Scaffold(body: Center(child: Text('Lesson not found')));
+          }
+          return LessonDetailPage(lesson: lesson);
         },
       ),
 

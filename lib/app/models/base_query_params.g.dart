@@ -11,5 +11,5 @@ Map<String, dynamic> _$BaseQueryParamsToJson(BaseQueryParams instance) =>
       'page': ?instance.page,
       'entry': ?instance.entry,
       'field': instance.field,
-      'sort': instance.sort,
+      'sort': BaseQueryParams.sortOrderToJson(instance.sort),
     };

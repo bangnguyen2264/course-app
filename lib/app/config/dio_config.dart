@@ -1,26 +1,29 @@
 import 'package:course/app/resources/app_api.dart';
 import 'package:course/app/services/secure_storage.dart';
-import 'package:course/domain/usecases/refresh_token_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'dart:async';
 
 class DioConfig {
   static Dio? _dio;
+  static Dio? _refreshDio; // Dio riêng cho refresh token
   static bool _isRefreshing = false;
+  static Completer<bool>? _refreshCompleter; // Để các request khác đợi refresh hoàn thành
 
   static Dio getInstance() {
     if (_dio != null) return _dio!;
 
     _dio = Dio(
       BaseOptions(
-        baseUrl: AppApi.baseUrl+AppApi.prefix, // TODO: Thay đổi base URL
+        baseUrl: AppApi.baseUrl + AppApi.prefix,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
+        // Chỉ coi status 2xx là success, còn lại sẽ throw error để interceptor xử lý
         validateStatus: (status) {
-          return status != null && status < 500;
+          return status != null && status >= 200 && status < 300;
         },
       ),
     );
@@ -34,11 +37,8 @@ class DioConfig {
         responseHeader: true,
         responseBody: true,
         error: true,
-        compact: false, // true = compact, false = expanded
-        // Filter: chỉ log error và response từ server
+        compact: false,
         filter: (options, args) {
-          // Có thể filter theo endpoint nếu cần
-          // return !options.uri.path.contains('/refresh-token');
           return true;
         },
       ),
@@ -48,10 +48,32 @@ class DioConfig {
     return _dio!;
   }
 
+  /// Dio riêng cho refresh token - không có auth interceptor để tránh vòng lặp
+  static Dio _getRefreshDio() {
+    if (_refreshDio != null) return _refreshDio!;
+
+    _refreshDio = Dio(
+      BaseOptions(
+        baseUrl: AppApi.baseUrl + AppApi.prefix,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    return _refreshDio!;
+  }
+
   // Auth Interceptor - Tự động thêm token vào header
   static Interceptor _authInterceptor() {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // Không thêm token cho endpoint refresh
+        if (_isRefreshEndpoint(options.path)) {
+          return handler.next(options);
+        }
+
         final secureStorage = getIt<SecureStorage>();
         final token = await secureStorage.getAccessToken();
 
@@ -62,21 +84,21 @@ class DioConfig {
         return handler.next(options);
       },
       onError: (error, handler) async {
-        // Handle token refresh logic on 401
-        if (error.response?.statusCode == 401 && !_isRefreshing) {
-          _isRefreshing = true;
-          try {
-            // Refresh token
-            final refreshTokenUsecase = getIt<RefreshTokenUsecase>();
-            final newToken = await refreshTokenUsecase.refreshToken();
+        // Không xử lý refresh cho endpoint refresh token
+        if (_isRefreshEndpoint(error.requestOptions.path)) {
+          return handler.next(error);
+        }
 
-            // Retry original request với token mới
-            _isRefreshing = false;
-            return handler.resolve(await _retry(error.requestOptions));
+        // Handle token refresh logic on 401
+        if (error.response?.statusCode == 401) {
+          try {
+            final success = await _handleTokenRefresh();
+            if (success) {
+              // Retry original request với token mới
+              return handler.resolve(await _retry(error.requestOptions));
+            }
           } catch (e) {
-            _isRefreshing = false;
-            // Token refresh failed, redirect to login
-            return handler.next(error);
+            // Token refresh failed
           }
         }
         return handler.next(error);
@@ -84,33 +106,61 @@ class DioConfig {
     );
   }
 
-  // Logging Interceptor - Log request và response
-  static Interceptor _loggingInterceptor() {
-    return InterceptorsWrapper(
-      onRequest: (options, handler) {
-        print('┌───────────────────────────────────────────────────────────');
-        print('│ Request: ${options.method} ${options.uri}');
-        print('│ Headers: ${options.headers}');
-        print('│ Data: ${options.data}');
-        print('└───────────────────────────────────────────────────────────');
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        print('┌───────────────────────────────────────────────────────────');
-        print('│ Response: ${response.statusCode} ${response.requestOptions.uri}');
-        print('│ Data: ${response.data}');
-        print('└───────────────────────────────────────────────────────────');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        print('┌───────────────────────────────────────────────────────────');
-        print('│ Error: ${error.response?.statusCode} ${error.requestOptions.uri}');
-        print('│ Message: ${error.message}');
-        print('│ Data: ${error.response?.data}');
-        print('└───────────────────────────────────────────────────────────');
-        return handler.next(error);
-      },
-    );
+  /// Kiểm tra có phải endpoint refresh không
+  static bool _isRefreshEndpoint(String path) {
+    return path.contains(AppApi.authRefresh) || path.contains('/refresh');
+  }
+
+  /// Xử lý refresh token với lock để tránh nhiều request cùng refresh
+  static Future<bool> _handleTokenRefresh() async {
+    // Nếu đang refresh, đợi kết quả
+    if (_isRefreshing) {
+      return await _refreshCompleter?.future ?? false;
+    }
+
+    _isRefreshing = true;
+    _refreshCompleter = Completer<bool>();
+
+    try {
+      final secureStorage = getIt<SecureStorage>();
+      final refreshToken = await secureStorage.getRefreshToken();
+
+      if (refreshToken == null || refreshToken.isEmpty) {
+        throw Exception('No refresh token available');
+      }
+
+      // Sử dụng Dio riêng để gọi refresh API
+      final response = await _getRefreshDio().post(
+        AppApi.authRefresh,
+        options: Options(headers: {'X-Refresh-Token': refreshToken}),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final newAccessToken = response.data['token'];
+        final newRefreshToken = response.data['refreshToken'];
+
+        if (newAccessToken != null) {
+          await secureStorage.setAccessToken(newAccessToken);
+        }
+        if (newRefreshToken != null) {
+          await secureStorage.setRefreshToken(newRefreshToken);
+        }
+
+        _refreshCompleter?.complete(true);
+        return true;
+      }
+
+      throw Exception('Invalid refresh response');
+    } catch (e) {
+      _refreshCompleter?.complete(false);
+      // Clear tokens khi refresh thất bại
+      final secureStorage = getIt<SecureStorage>();
+      await secureStorage.clearAll();
+      return false;
+    } finally {
+      _isRefreshing = false;
+      _refreshCompleter = null;
+    }
   }
 
   // Error Interceptor - Xử lý lỗi chung

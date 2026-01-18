@@ -11,6 +11,7 @@ class LessonSection {
   final String title;
   final String? description;
   final String? dataPath;
+  final int? position;
 
   LessonSection({
     required this.id,
@@ -18,6 +19,7 @@ class LessonSection {
     this.description,
     this.dataPath,
     required this.dataType,
+    this.position,
   });
 
   factory LessonSection.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class LessonSection {
       description: parseStringOrNull(json['description']),
       dataPath: parseStringOrNull(json['dataPath']),
       dataType: DataType.fromString(json['dataType']?.toString()),
+      position: json['position'] as int?,
     );
   }
 

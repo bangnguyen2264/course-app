@@ -13,6 +13,7 @@ LessonSection _$LessonSectionFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       dataPath: json['dataPath'] as String?,
       dataType: $enumDecode(_$DataTypeEnumMap, json['dataType']),
+      position: (json['position'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$LessonSectionToJson(LessonSection instance) =>
@@ -22,6 +23,7 @@ Map<String, dynamic> _$LessonSectionToJson(LessonSection instance) =>
       'title': instance.title,
       'description': instance.description,
       'dataPath': instance.dataPath,
+      'position': instance.position,
     };
 
 const _$DataTypeEnumMap = {
