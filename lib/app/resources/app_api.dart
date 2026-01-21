@@ -5,7 +5,12 @@ abstract class AppApi {
   // ============================================================================
   // BASE URL
   // ============================================================================
-  static const String baseUrl = 'https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net';
+    static String get baseUrl =>
+      const String.fromEnvironment('BASE_URL', defaultValue: '') != ''
+        ? const String.fromEnvironment('BASE_URL')
+        : (String.fromEnvironment('BASE_URL', defaultValue: '') != ''
+          ? String.fromEnvironment('BASE_URL')
+          : (String.fromEnvironment('BASE_URL') ?? 'https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net'));
   static const String prefix = '/api';
 
   // ============================================================================
@@ -68,6 +73,7 @@ abstract class AppApi {
   // QUIZ CONTROLLER
   // ============================================================================
   static const String quizList = '/quiz';
+  static const String quizReview = '/quiz/review';
   static const String quizCreate = '/quiz';
   static const String quizById = '/quiz/{id}';
   static const String quizDelete = '/quiz/{id}';

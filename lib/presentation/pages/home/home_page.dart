@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:course/app/constants/app_routes.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:course/app/resources/app_color.dart';
+import 'package:course/app/services/app_preferences.dart';
 import 'package:course/domain/entities/user/user.dart';
 import 'package:course/domain/usecases/get_user_usecase.dart';
 import 'package:course/presentation/controllers/home/home_controller.dart';
@@ -23,7 +24,8 @@ class HomePage extends HookConsumerWidget {
     final homeController = ref.read(homeControllerProvider.notifier);
 
     // State cho user (local state)
-    final user = useState<User?>(null);
+    final userFullName = useState<String?>(null);
+    final userAvatarUrl = useState<String?>(null);
     final isLoadingUser = useState(true);
     final searchController = useTextEditingController();
     final debounceTimer = useRef<Timer?>(null);
@@ -54,8 +56,10 @@ class HomePage extends HookConsumerWidget {
     useEffect(() {
       Future.microtask(() async {
         try {
-          final loadedUser = await getIt<GetUserUseCase>().execute();
-          user.value = loadedUser;
+          final loadedUser = await getIt<AppPreferences>().getUserName();
+          userFullName.value = loadedUser;
+          final loadedAvatarUrl = await getIt<AppPreferences>().getAvatarUrl();
+          userAvatarUrl.value = loadedAvatarUrl;
         } catch (e) {
           debugPrint('Error loading user: $e');
         } finally {
@@ -85,7 +89,7 @@ class HomePage extends HookConsumerWidget {
           child: Column(
             children: [
               // Header với Avatar, Welcome, Notification
-              _buildHeader(context, user.value, isLoadingUser.value),
+              _buildHeader(context, userFullName.value, userAvatarUrl.value, isLoadingUser.value),
               // Body content
               Expanded(
                 child: Container(
@@ -173,13 +177,13 @@ class HomePage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, User? user, bool isLoading) {
+  Widget _buildHeader(BuildContext context, String? userName, String? avatarUrl, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           // Avatar
-          ProfileAvatar(avatarUrl: user?.avatarUrl, size: 50),
+          ProfileAvatar(avatarUrl: avatarUrl, size: 50),
           const SizedBox(width: 12),
           // Welcome text
           Expanded(
@@ -192,7 +196,7 @@ class HomePage extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isLoading ? '...' : (user?.fullName ?? 'Guest'),
+                  isLoading ? '...' : (userName ?? 'Guest'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,

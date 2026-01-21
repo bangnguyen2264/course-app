@@ -14,12 +14,17 @@ abstract class AppRoutes {
   // Course routes
   static const String courseList = '/courses';
 
-
   // Chapter routes
   static const String chapter = '/chapters';
 
   // Lesson section routes
   static const String lessonSection = '/lesson-sections';
+
+  // Exam routes
+  static const String examList = '/exam-list';
+  static const String examTake = '/exam-take';
+  static const String examResult = '/exam-result';
+  static const String examReview = '/exam-review';
 
   // Quiz routes
   static const String quizList = '/quizzes';

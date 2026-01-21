@@ -11,6 +11,7 @@ LessonSection _$LessonSectionFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       description: json['description'] as String?,
+      content: json['content'] as String?,
       dataPath: json['dataPath'] as String?,
       dataType: $enumDecode(_$DataTypeEnumMap, json['dataType']),
       position: (json['position'] as num?)?.toInt(),
@@ -22,6 +23,7 @@ Map<String, dynamic> _$LessonSectionToJson(LessonSection instance) =>
       'dataType': _$DataTypeEnumMap[instance.dataType]!,
       'title': instance.title,
       'description': instance.description,
+      'content': instance.content,
       'dataPath': instance.dataPath,
       'position': instance.position,
     };

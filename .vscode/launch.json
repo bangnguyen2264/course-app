@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+  
+
+    {
+      "name": "course",
+      "request": "launch",
+      "type": "dart",
+      "env": {
+        "BASE_URL": "https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net"
+      }
+    },
+    {
+      "name": "course (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "env": {
+        "BASE_URL": "https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net"
+      }
+    },
+    {
+      "name": "course (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "env": {
+        "BASE_URL": "https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net"
+      }
+    }
+  ]
+}

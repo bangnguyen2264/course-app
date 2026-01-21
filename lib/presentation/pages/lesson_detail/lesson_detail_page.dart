@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/domain/entities/lesson/lesson.dart';
 import 'package:course/presentation/controllers/lesson_detail/lesson_detail_controller.dart';
@@ -45,9 +47,7 @@ class LessonDetailPage extends HookConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            _buildHeader(context, state),
-            // Body
+            LessonDetailAppBar(onBack: () => context.pop(), onBookmark: () {}, onShare: () {}),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => controller.refresh(),
@@ -60,98 +60,84 @@ class LessonDetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, LessonDetailState state) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Back button
-          GestureDetector(
-            onTap: () => context.pop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColor.bgGrey,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColor.titleText),
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Title
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  lesson.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.titleText,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (lesson.description != null && lesson.description!.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    lesson.description!,
-                    style: TextStyle(fontSize: 13, color: AppColor.statisticLabel),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Sections count
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColor.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${state.sections.length} nội dung',
-              style: TextStyle(fontSize: 12, color: AppColor.primary, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBody(
     BuildContext context,
     LessonDetailState state,
     LessonDetailController controller,
   ) {
-    if (state.isLoading && state.sections.isEmpty) {
-      return _buildLoadingSkeleton();
-    }
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+          controller.loadMoreSections();
+        }
+        return false;
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: LessonDetailHeader(
+              lesson: lesson,
+              sectionCount: state.sections.length,
+              estimatedMinutes: _estimatedMinutes(state.sections.length),
+              chapterLabel: _chapterLabel(),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 4)),
+          if (state.isLoading && state.sections.isEmpty)
+            _buildLoadingSliver()
+          else if (state.hasError && state.sections.isEmpty)
+            _buildErrorSliver(controller, state.errorMessage)
+          else if (state.sections.isEmpty)
+            _buildEmptySliver()
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              sliver: LessonSectionsSliverList(sections: state.sections),
+            ),
+          if (state.isLoadingMore)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+          if (state.sections.isNotEmpty)
+            SliverToBoxAdapter(
+              child: LessonCompleteFooter(
+                onComplete: () {},
+                nextLabel: 'Next: Balanced Trees Quiz',
+              ),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        ],
+      ),
+    );
+  }
 
-    if (state.hasError && state.sections.isEmpty) {
-      return Center(
+  SliverList _buildLoadingSliver() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) => const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: LessonSectionSkeleton(),
+        ),
+        childCount: 3,
+      ),
+    );
+  }
+
+  SliverFillRemaining _buildErrorSliver(LessonDetailController controller, String? errorMessage) {
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             Text(
-              state.errorMessage ?? 'Có lỗi xảy ra',
+              errorMessage ?? 'Có lỗi xảy ra',
               style: const TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -162,51 +148,34 @@ class LessonDetailPage extends HookConsumerWidget {
             ),
           ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    if (state.sections.isEmpty) {
-      return const Center(
+  SliverFillRemaining _buildEmptySliver() {
+    return const SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.article_outlined, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text('Chưa có nội dung', style: TextStyle(color: Colors.grey, fontSize: 16)),
           ],
         ),
-      );
-    }
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollInfo) {
-        if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
-          controller.loadMoreSections();
-        }
-        return false;
-      },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.sections.length + (state.isLoadingMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= state.sections.length) {
-            return const Center(
-              child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()),
-            );
-          }
-
-          final section = state.sections[index];
-          return LessonSectionCard(section: section, index: index + 1);
-        },
       ),
     );
   }
 
-  Widget _buildLoadingSkeleton() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 3,
-      itemBuilder: (context, index) => const LessonSectionSkeleton(),
-    );
+  int _estimatedMinutes(int sectionCount) {
+    if (sectionCount <= 0) return 12;
+    return max(5, sectionCount * 3);
+  }
+
+  String _chapterLabel() {
+    if (lesson.position != null) return 'Chapter ${lesson.position}';
+    if (lesson.chapterId != null) return 'Chapter ${lesson.chapterId}';
+    return 'Chapter';
   }
 }

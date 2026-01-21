@@ -1,3 +1,5 @@
+export 'chapter_app_bar.dart';
+
 import 'package:course/app/resources/app_color.dart';
 import 'package:course/domain/entities/chapter/chapter.dart';
 import 'package:course/domain/entities/lesson/lesson.dart';

@@ -16,7 +16,10 @@ class LoginUseCase {
     final response = await _authRepository.login(request);
     
     // Lưu token vào secure storage
-    await _appPreferences.setUserId(response.id.toString());
+    await _appPreferences.setUserId(response.user.id);
+    await _appPreferences.setUserName(response.user.fullName);
+    await _appPreferences.setUserEmail(response.user.email);
+    await _appPreferences.setAvatarUrl(response.user.avatarUrl);
     await _secureStorage.setAccessToken(response.token);
     await _secureStorage.setRefreshToken(response.refreshToken);
     

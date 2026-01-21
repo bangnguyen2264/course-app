@@ -15,7 +15,7 @@ class GetUserUseCase {
     if (userId == null) {
       throw Exception('User ID không tồn tại');
     }
-    return await _userRepository.getUser(int.parse(userId));
+    return await _userRepository.getUser(userId);
   }
 }
 

@@ -1,16 +1,31 @@
-# course
 
-A new Flutter project.
+# Flutter Course App
 
-## Getting Started
+## Yêu cầu
+- Flutter SDK (3.x trở lên)
+- Dart SDK
+- Android Studio hoặc VS Code (khuyến nghị)
+- Thiết bị/emulator Android, iOS, hoặc trình duyệt web
 
-This project is a starting point for a Flutter application.
+## Cài đặt
+1. Clone source code về máy:
+	```sh
+	git clone <repo-url>
+	```
+2. Cài đặt dependencies:
+	```sh
+	flutter pub get
+	```
+3. (Tùy chọn) Cấu hình API endpoint:
+	- Sửa file `.vscode/launch.json` để thay đổi `BASE_URL` nếu cần.
 
-A few resources to get you started if this is your first Flutter project:
+## Chạy ứng dụng
+- Chạy trên thiết bị/emulator:
+  ```sh
+  flutter run
+  ```
+- Hoặc sử dụng nút Run/Debug trong VS Code/Android Studio.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Ghi chú
+- Đăng nhập/đăng ký tài khoản để sử dụng đầy đủ tính năng.
+- Nếu gặp lỗi API, kiểm tra lại biến môi trường `BASE_URL`.

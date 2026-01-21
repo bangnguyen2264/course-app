@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:course/app/resources/app_api.dart';
 import 'package:course/app/services/secure_storage.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +12,12 @@ class DioConfig {
   static Dio? _refreshDio; // Dio riêng cho refresh token
   static bool _isRefreshing = false;
   static Completer<bool>? _refreshCompleter; // Để các request khác đợi refresh hoàn thành
+  static VoidCallback? _onTokenExpired; // Callback khi token hết hạn và không thể refresh
+
+  /// Set callback để xử lý khi token hết hạn
+  static void setOnTokenExpiredCallback(VoidCallback callback) {
+    _onTokenExpired = callback;
+  }
 
   static Dio getInstance() {
     if (_dio != null) return _dio!;
@@ -98,7 +106,8 @@ class DioConfig {
               return handler.resolve(await _retry(error.requestOptions));
             }
           } catch (e) {
-            // Token refresh failed
+            // Token refresh failed, trigger logout callback
+            _onTokenExpired?.call();
           }
         }
         return handler.next(error);
@@ -156,6 +165,8 @@ class DioConfig {
       // Clear tokens khi refresh thất bại
       final secureStorage = getIt<SecureStorage>();
       await secureStorage.clearAll();
+      // Trigger logout callback to navigate to get_started
+      _onTokenExpired?.call();
       return false;
     } finally {
       _isRefreshing = false;

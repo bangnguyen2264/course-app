@@ -1,7 +1,13 @@
+import 'package:course/domain/entities/exam/exam.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
 import 'package:course/domain/entities/lesson/lesson.dart';
 import 'package:course/domain/entities/subject/subject.dart';
 import 'package:course/presentation/pages/chapter/chapter_page.dart';
+import 'package:course/presentation/pages/exam_list/exam_list_page.dart';
+import 'package:course/presentation/pages/exam_result/exam_result_page.dart';
+import 'package:course/presentation/pages/exam_review/exam_review_page.dart';
 import 'package:course/presentation/pages/home/home_page.dart';
+import 'package:course/presentation/pages/exam_take/exam_take_page.dart';
 import 'package:course/presentation/pages/lesson_detail/lesson_detail_page.dart';
 import 'package:course/presentation/pages/login/login_page.dart';
 import 'package:course/presentation/pages/register/register_page.dart';
@@ -94,6 +100,53 @@ class AppRouter {
             return const Scaffold(body: Center(child: Text('Lesson not found')));
           }
           return LessonDetailPage(lesson: lesson);
+        },
+      ),
+
+      // Exam List routes
+      GoRoute(
+        path: AppRoutes.examList,
+        name: 'exam-list',
+        builder: (context, state) {
+          final subject = state.extra as Subject?;
+          if (subject == null) {
+            return const Scaffold(body: Center(child: Text('Subject not found')));
+          }
+          return ExamListPage(subject: subject);
+        },
+      ),
+
+      // Exam Take routes
+      GoRoute(
+        path: AppRoutes.examTake,
+        name: 'exam-take',
+        builder: (context, state) {
+          final exam = state.extra as Exam?;
+          if (exam == null) {
+            return const Scaffold(body: Center(child: Text('Exam not found')));
+          }
+          return ExamTakePage(exam: exam);
+        },
+      ),
+
+      // Exam Result routes
+      GoRoute(
+        path: AppRoutes.examResult,
+        name: 'exam-result',
+        builder: (context, state) {
+          final result = state.extra as ExamResult?;
+          return ExamResultPage(result: result);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.examReview,
+        name: 'exam-review',
+        builder: (context, state) {
+          final examId = state.extra as int?;
+          if (examId == null) {
+            return const Scaffold(body: Center(child: Text('Không có examId.')));
+          }
+          return ExamReviewPage(examId: examId);
         },
       ),
 

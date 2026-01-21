@@ -9,7 +9,7 @@ class LessonDetailController extends StateNotifier<LessonDetailState> {
   final GetLessonSectionUsecase _getLessonSectionUsecase;
 
   /// Số lượng item mỗi trang
-  static const int _pageSize = 20;
+  static const int _pageSize = 10;
 
   LessonDetailController(this._getLessonSectionUsecase) : super(const LessonDetailState());
 
@@ -92,6 +92,6 @@ class LessonDetailController extends StateNotifier<LessonDetailState> {
 
 /// Provider cho LessonDetailController
 final lessonDetailControllerProvider =
-    StateNotifierProvider<LessonDetailController, LessonDetailState>((ref) {
+    StateNotifierProvider.autoDispose<LessonDetailController, LessonDetailState>((ref) {
       return LessonDetailController(getIt<GetLessonSectionUsecase>());
     });

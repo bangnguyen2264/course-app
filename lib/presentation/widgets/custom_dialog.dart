@@ -115,9 +115,6 @@ class CustomDialog extends StatelessWidget {
   /// Callback khi nhấn xác nhận
   final VoidCallback? onConfirm;
 
-  /// Callback khi nhấn hủy
-  final VoidCallback? onCancel;
-
   /// Có thể đóng dialog bằng cách nhấn bên ngoài không
   final bool barrierDismissible;
 
@@ -132,7 +129,6 @@ class CustomDialog extends StatelessWidget {
     this.cancelText = 'Hủy',
     this.showCancel,
     this.onConfirm,
-    this.onCancel,
     this.barrierDismissible = true,
   });
 
@@ -148,7 +144,6 @@ class CustomDialog extends StatelessWidget {
     String cancelText = 'Hủy',
     bool? showCancel,
     VoidCallback? onConfirm,
-    VoidCallback? onCancel,
     bool barrierDismissible = true,
   }) {
     return showDialog<bool>(
@@ -164,7 +159,6 @@ class CustomDialog extends StatelessWidget {
         cancelText: cancelText,
         showCancel: showCancel,
         onConfirm: onConfirm,
-        onCancel: onCancel,
         barrierDismissible: barrierDismissible,
       ),
     );
@@ -284,7 +278,6 @@ class CustomDialog extends StatelessWidget {
         if (displayShowCancel)
           OutlinedButton(
             onPressed: () {
-              onCancel?.call();
               context.pop(false);
             },
             style: OutlinedButton.styleFrom(

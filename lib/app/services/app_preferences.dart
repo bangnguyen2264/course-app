@@ -21,7 +21,7 @@ class AppPreferences {
   static const String _userIdKey = 'user_id';
   static const String _userNameKey = 'user_name';
   static const String _userEmailKey = 'user_email';
-  static const String _userTokenKey = 'user_token';
+  static const String _avatarUrlKey = 'avatar_url';
   static const String _themeMode = 'theme_mode';
   static const String _languageCode = 'language_code';
 
@@ -44,13 +44,13 @@ class AppPreferences {
   }
 
   // User ID
-  Future<String?> getUserId() async {
-    return _preferences?.getString(_userIdKey);
+  Future<int?> getUserId() async {
+    return _preferences?.getInt(_userIdKey);
   }
 
-  Future<void> setUserId(String? userId) async {
+  Future<void> setUserId(int? userId) async {
     if (userId != null) {
-      await _preferences?.setString(_userIdKey, userId);
+      await _preferences?.setInt(_userIdKey, userId);
     } else {
       await _preferences?.remove(_userIdKey);
     }
@@ -82,16 +82,16 @@ class AppPreferences {
     }
   }
 
-  // User Token
-  Future<String?> getUserToken() async {
-    return _preferences?.getString(_userTokenKey);
+ // Avatar URL
+  Future<String?> getAvatarUrl() async {
+    return _preferences?.getString(_avatarUrlKey);
   }
 
-  Future<void> setUserToken(String? token) async {
-    if (token != null) {
-      await _preferences?.setString(_userTokenKey, token);
+  Future<void> setAvatarUrl(String? url) async {
+    if (url != null) {
+      await _preferences?.setString(_avatarUrlKey, url);
     } else {
-      await _preferences?.remove(_userTokenKey);
+      await _preferences?.remove(_avatarUrlKey);
     }
   }
 
@@ -118,7 +118,7 @@ class AppPreferences {
     await _preferences?.remove(_userIdKey);
     await _preferences?.remove(_userNameKey);
     await _preferences?.remove(_userEmailKey);
-    await _preferences?.remove(_userTokenKey);
+    await _preferences?.remove(_avatarUrlKey);
     await _preferences?.setBool(_isLoggedInKey, false);
   }
 

@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:course/app/config/dio_config.dart';
+import 'package:course/app/constants/app_routes.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Setup token expiration callback
+    DioConfig.setOnTokenExpiredCallback(() {
+      AppRouter.router.go(AppRoutes.getStarted);
+    });
+
     return SplashRemover(
       child: Sizer(
         builder: (context, orientation, deviceType) {

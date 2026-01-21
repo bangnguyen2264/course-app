@@ -71,9 +71,12 @@ class ChapterPage extends HookConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            _buildHeader(context, chapterState, isSearching, searchController, chapterController),
-            // Body
+            ChapterAppBar(
+              onBack: () => context.pop(),
+              title: subject.name,
+              subtitle: '${chapterState.chapterCount} chương',
+              onSearch: null, // Disabled search for now
+            ),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => chapterController.refresh(),
@@ -82,69 +85,6 @@ class ChapterPage extends HookConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(
-    BuildContext context,
-    ChapterState state,
-    ValueNotifier<bool> isSearching,
-    TextEditingController searchController,
-    ChapterController controller,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Row(
-        children: [
-          // Back button
-          IconButton(
-            onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back),
-            color: AppColor.titleText,
-          ),
-          // Title or Search bar
-          Expanded(
-            child: isSearching.value
-                ? ChapterSearchBar(
-                    controller: searchController,
-                    onClear: () {
-                      searchController.clear();
-                      controller.clearSearch();
-                      isSearching.value = false;
-                    },
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        subject.name,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppColor.titleText,
-                        ),
-                      ),
-                      Text(
-                        '${state.chapterCount} chương',
-                        style: TextStyle(fontSize: 13, color: AppColor.statisticLabel),
-                      ),
-                    ],
-                  ),
-          ),
-          // // Search button
-          // IconButton(
-          //   onPressed: () {
-          //     isSearching.value = !isSearching.value;
-          //     if (!isSearching.value) {
-          //       searchController.clear();
-          //       controller.clearSearch();
-          //     }
-          //   },
-          //   icon: Icon(isSearching.value ? Icons.close : Icons.search),
-          //   color: AppColor.titleText,
-          // ),
-        ],
       ),
     );
   }

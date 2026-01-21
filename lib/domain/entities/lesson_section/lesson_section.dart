@@ -10,6 +10,7 @@ class LessonSection {
   final DataType dataType;
   final String title;
   final String? description;
+  final String? content;
   final String? dataPath;
   final int? position;
 
@@ -17,6 +18,7 @@ class LessonSection {
     required this.id,
     required this.title,
     this.description,
+    this.content,
     this.dataPath,
     required this.dataType,
     this.position,
@@ -27,6 +29,7 @@ class LessonSection {
       id: parseInt(json['id']),
       title: parseString(json['title']),
       description: parseStringOrNull(json['description']),
+      content: parseStringOrNull(json['content']),
       dataPath: parseStringOrNull(json['dataPath']),
       dataType: DataType.fromString(json['dataType']?.toString()),
       position: json['position'] as int?,
