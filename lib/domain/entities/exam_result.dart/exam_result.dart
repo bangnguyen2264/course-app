@@ -1,3 +1,5 @@
+import 'package:course/domain/quiz/quiz.dart';
+import 'package:course/domain/quiz/quiz_submission_result.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exam_result.g.dart';
@@ -11,6 +13,7 @@ class ExamResult {
   final int correct;
   final int incorrect;
   final int timeTaken;
+  final List<QuizSubmissionResult> quizResultSubmissionList;
   final DateTime createdAt;
 
   ExamResult({
@@ -21,6 +24,7 @@ class ExamResult {
     required this.correct,
     required this.incorrect,
     required this.timeTaken,
+    required this.quizResultSubmissionList,
     required this.createdAt,
   });
 

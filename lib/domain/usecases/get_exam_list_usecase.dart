@@ -16,7 +16,8 @@ class GetExamListUsecase {
   GetExamListUsecase(this._examRepository);
 
   Future<ExamListResult> call({
-    required int subjectId,
+    int? subjectId,
+    int? examId,
     int? page,
     int? entry,
     String? search,

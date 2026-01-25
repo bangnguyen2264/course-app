@@ -35,6 +35,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        // Luôn set màu status bar là xanh primary
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColor.primary,
           statusBarIconBrightness: Brightness.light,

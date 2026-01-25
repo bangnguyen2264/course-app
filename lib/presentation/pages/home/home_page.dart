@@ -10,7 +10,9 @@ import 'package:course/presentation/controllers/home/home_controller.dart';
 import 'package:course/presentation/controllers/home/home_state.dart';
 import 'package:course/presentation/pages/home/widgets/subject_card.dart';
 import 'package:course/presentation/pages/profile/widgets/profile_avatar.dart';
+import 'package:course/presentation/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -82,37 +84,63 @@ class HomePage extends HookConsumerWidget {
       }
     });
 
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColor.appGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header với Avatar, Welcome, Notification
-              _buildHeader(context, userFullName.value, userAvatarUrl.value, isLoadingUser.value),
-              // Body content
-              Expanded(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: AppColor.scaffoldBackground,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: AppColor.primary,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColor.gradientStart,
+        appBar: CustomAppBar(
+          showBackButton: false,
+          leading: // Avatar phía dưới AppBar
+          ProfileAvatar(
+            avatarUrl: userAvatarUrl.value,
+            size: 50,
+          ),
+          title: userFullName.value ?? 'Guest',
+          subtitle: 'Welcome back',
+          centerTitle: false,
+          actions: [
+            CustomAppBarAction(
+              icon: Icons.notifications_outlined,
+              onTap: () {
+                // TODO: Navigate to notifications
+              },
+            ),
+          ],
+        ),
+        body: Container(
+          decoration: const BoxDecoration(gradient: AppColor.appGradient),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // Body content
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: AppColor.scaffoldBackground,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                    child: RefreshIndicator(
-                      onRefresh: () => homeController.refresh(),
-                      child: _buildBody(context, ref, homeState, searchController),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
+                      child: RefreshIndicator(
+                        onRefresh: () => homeController.refresh(),
+                        child: _buildBody(context, ref, homeState, searchController),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

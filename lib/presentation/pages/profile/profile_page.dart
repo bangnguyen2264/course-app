@@ -42,7 +42,7 @@ class ProfilePage extends HookConsumerWidget {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => viewModel.refresh(),
-        child: _buildBody(context, ref, state),
+        child: SafeArea(child: _buildBody(context, ref, state)),
       ),
     );
   }

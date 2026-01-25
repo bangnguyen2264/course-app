@@ -14,6 +14,9 @@ ExamResult _$ExamResultFromJson(Map<String, dynamic> json) => ExamResult(
   correct: (json['correct'] as num).toInt(),
   incorrect: (json['incorrect'] as num).toInt(),
   timeTaken: (json['timeTaken'] as num).toInt(),
+  quizResultSubmissionList: (json['quizResultSubmissionList'] as List<dynamic>)
+      .map((e) => QuizSubmissionResult.fromJson(e as Map<String, dynamic>))
+      .toList(),
   createdAt: DateTime.parse(json['createdAt'] as String),
 );
 
@@ -26,5 +29,6 @@ Map<String, dynamic> _$ExamResultToJson(ExamResult instance) =>
       'correct': instance.correct,
       'incorrect': instance.incorrect,
       'timeTaken': instance.timeTaken,
+      'quizResultSubmissionList': instance.quizResultSubmissionList,
       'createdAt': instance.createdAt.toIso8601String(),
     };

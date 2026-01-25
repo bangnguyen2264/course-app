@@ -142,11 +142,11 @@ class AppRouter {
         path: AppRoutes.examReview,
         name: 'exam-review',
         builder: (context, state) {
-          final examId = state.extra as int?;
-          if (examId == null) {
-            return const Scaffold(body: Center(child: Text('Không có examId.')));
+          final examResult = state.extra as ExamResult?;
+          if (examResult == null) {
+            return const Scaffold(body: Center(child: Text('Không có examResult.')));
           }
-          return ExamReviewPage(examId: examId);
+          return ExamReviewPage(examResult: examResult);
         },
       ),
 

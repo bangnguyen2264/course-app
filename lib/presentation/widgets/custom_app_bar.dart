@@ -1,11 +1,12 @@
 import 'package:course/app/resources/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Custom App Bar dùng chung cho các màn hình
 /// Giữ nguyên UI cũ nhưng chuyển sang dùng AppBar chuẩn
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Callback khi tap back button (bắt buộc)
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
 
   /// Tiêu đề chính
   final String title;
@@ -18,6 +19,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final bool centerTitle;
 
+  final Widget? leading;
+
   /// Các action buttons tùy chỉnh ở phía bên phải (tùy chọn)
   final List<CustomAppBarAction>? actions;
 
@@ -26,11 +29,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({
     super.key,
-    required this.onBack,
+    this.onBack,
     required this.title,
     this.centerTitle = true,
     this.subtitle,
     this.onSearch,
+    this.leading,
     this.actions,
     this.showBackButton = true,
   });
@@ -42,15 +46,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
+        systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         centerTitle: centerTitle,
         // Padding giống UI cũ
         titleSpacing: 0,
         leading: showBackButton
-            ? _ActionButton(icon: Icons.arrow_back_ios_new, onTap: onBack)
-            : const SizedBox.shrink(),
+            ? _ActionButton(icon: Icons.arrow_back_ios_new, onTap: onBack ?? () => context.pop())
+            : leading,
         title: Column(
+          crossAxisAlignment: centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               title,
@@ -63,7 +71,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              subtitle!,
+              subtitle ?? '',
               style: const TextStyle(fontSize: 13, color: AppColor.statisticLabel),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

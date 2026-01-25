@@ -5,12 +5,7 @@ abstract class AppApi {
   // ============================================================================
   // BASE URL
   // ============================================================================
-    static String get baseUrl =>
-      const String.fromEnvironment('BASE_URL', defaultValue: '') != ''
-        ? const String.fromEnvironment('BASE_URL')
-        : (String.fromEnvironment('BASE_URL', defaultValue: '') != ''
-          ? String.fromEnvironment('BASE_URL')
-          : (String.fromEnvironment('BASE_URL') ?? 'https://courses-demo-hsa2hsg0bmcwcxhq.eastasia-01.azurewebsites.net'));
+  static String get baseUrl => const String.fromEnvironment('BASE_URL', defaultValue: '');
   static const String prefix = '/api';
 
   // ============================================================================

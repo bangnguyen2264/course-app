@@ -1,236 +1,281 @@
-import 'package:course/presentation/controllers/exam_review/exam_review_controller.dart';
+import 'package:course/app/resources/app_style.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/quiz/quiz_submission_result.dart';
+import 'package:course/presentation/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:course/domain/quiz/quiz_review.dart';
+import 'package:course/app/resources/app_color.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ExamReviewPage extends ConsumerStatefulWidget {
-  final int examId;
-  const ExamReviewPage({super.key, required this.examId});
+class ExamReviewPage extends ConsumerWidget {
+  final ExamResult examResult;
 
-  @override
-  ConsumerState<ExamReviewPage> createState() => _ExamReviewPageState();
-}
-
-class _ExamReviewPageState extends ConsumerState<ExamReviewPage> {
-  final ScrollController _scrollController = ScrollController();
+  const ExamReviewPage({super.key, required this.examResult});
 
   @override
-  void initState() {
-    super.initState();
-    // Tự động load more khi scroll gần cuối (infinite scroll)
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-        ref.read(examReviewController(widget.examId).notifier).loadMore();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(examReviewController(widget.examId));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final quizSubmissions = examResult.quizResultSubmissionList;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Xem lại đáp án'), centerTitle: true),
-      body: state.questions.when(
-        data: (questions) {
-          if (questions.isEmpty) {
-            return const Center(child: Text('Không có dữ liệu'));
-          }
-
-          final hasMore = state.hasMore;
-          final isLoadingMore = state.isLoadingMore;
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              await ref.read(examReviewController(widget.examId).notifier).refresh();
-            },
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: questions.length + (hasMore || isLoadingMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == questions.length) {
-                  // Footer loading / load more
-                  if (isLoadingMore) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  if (!hasMore) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: Text('Đã xem hết câu hỏi')),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
-
-                final q = questions[index];
-                return _buildQuestionCard(q);
-              },
-            ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, st) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Lỗi: $err'),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () => ref.read(examReviewController(widget.examId).notifier).retry(),
-                child: const Text('Thử lại'),
-              ),
-            ],
+      appBar: CustomAppBar(title: examResult.examTitle),
+      body: CustomScrollView(
+        slivers: [
+          // Header tóm tắt kết quả
+          SliverToBoxAdapter(child: _buildResultSummary(context, theme)),
+          // Danh sách câu hỏi
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final submission = quizSubmissions[index];
+              return _buildQuestionCard(context, submission, theme);
+            }, childCount: quizSubmissions.length),
           ),
-        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 52,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
             onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
-            child: const Text('Về trang chủ'),
+            child: Text(
+              'Quay về trang chủ',
+              style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildQuestionCard(QuizReview q) {
-    // Parse correctAnswers từ string "[3]" hoặc "[0,2,3]" thành List<int>
-    final correctIndices = _parseCorrectAnswers(q.correctAnswers);
+  Widget _buildResultSummary(BuildContext context, ThemeData theme) {
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              examResult.examTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildInfoItem(
+                  context,
+                  icon: Icons.score,
+                  label: 'Điểm',
+                  value: '${examResult.score}%',
+                  color: theme.colorScheme.primary,
+                ),
+                _buildInfoItem(
+                  context,
+                  icon: Icons.check_circle,
+                  label: 'Đúng',
+                  value: '${examResult.correct}',
+                  color: AppColor.primary, // giữ màu đặc trưng đúng/sai
+                ),
+                _buildInfoItem(
+                  context,
+                  icon: Icons.cancel,
+                  label: 'Sai',
+                  value: '${examResult.incorrect}',
+                  color: AppColor.red,
+                ),
+              ],
+            ),
+            const Divider(height: 32),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.timer_outlined, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text(
+                  'Thời gian: ${examResult.timeTaken} giây',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 32),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(color: color, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestionCard(
+    BuildContext context,
+    QuizSubmissionResult submission,
+    ThemeData theme,
+  ) {
+    final correctIndices = _parseIndices(submission.correctAnswers);
+    final userIndices = _parseIndices(submission.answer);
+
+    final isCorrect =
+        userIndices.length == correctIndices.length &&
+        userIndices.every((i) => correctIndices.contains(i));
+
+    final errorColor = theme.colorScheme.error;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      elevation: 3,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Câu hỏi
+            // Header câu hỏi
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Câu ${q.id}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey,
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: isCorrect ? AppColor.primary : errorColor,
+                  child: Text(
+                    '${submission.id}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    q.question,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, height: 1.4),
+                    submission.question,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      height: 1.4,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // Danh sách các lựa chọn
-            ...List.generate(q.options.length, (index) {
-              final optionText = q.options[index];
-              final isCorrect = correctIndices.contains(index);
+            // Các lựa chọn
+            ...List.generate(submission.options.length, (idx) {
+              final text = submission.options[idx];
+              final isUserSelected = userIndices.contains(idx);
+              final isCorrectOption = correctIndices.contains(idx);
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+              Color? bgColor;
+              Color? borderColor;
+              Color? textColor = theme.colorScheme.onSurface;
+              IconData? trailingIcon;
+
+              if (isUserSelected) {
+                if (isCorrectOption) {
+                  bgColor = AppColor.primary.withOpacity(0.1);
+                  borderColor = AppColor.primary;
+                  textColor = AppColor.primary;
+                  trailingIcon = Icons.check_circle;
+                } else {
+                  bgColor = errorColor.withOpacity(0.1);
+                  borderColor = errorColor;
+                  textColor = errorColor;
+                  trailingIcon = Icons.cancel;
+                }
+              } else if (isCorrectOption) {
+                bgColor = AppColor.primary.withOpacity(0.08);
+                borderColor = AppColor.primary.withOpacity(0.6);
+                textColor = AppColor.primary;
+                trailingIcon = Icons.check_circle_outline;
+              }
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: bgColor ?? theme.cardColor,
+                  border: Border.all(
+                    color: borderColor ?? theme.dividerColor,
+                    width: isUserSelected || isCorrectOption ? 1.5 : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Icon chỉ báo đúng/sai
-                    Icon(
-                      isCorrect ? Icons.check_circle : Icons.circle_outlined,
-                      color: isCorrect ? Colors.green : Colors.grey[500],
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-
-                    // Nội dung lựa chọn
                     Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          optionText,
-                          style: TextStyle(
-                            fontSize: 15,
-                            height: 1.4,
-                            color: isCorrect ? Colors.green[800] : Colors.black87,
-                            fontWeight: isCorrect ? FontWeight.w600 : FontWeight.normal,
-                          ),
+                      child: Text(
+                        text,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: textColor,
+                          fontWeight: isCorrectOption || isUserSelected
+                              ? FontWeightsManager.semiBold
+                              : FontWeightsManager.medium,
                         ),
                       ),
                     ),
-
-                    // (Tùy chọn) Thêm nhãn "Đáp án đúng" nếu muốn rõ ràng hơn
-                    if (isCorrect)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Đúng',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.green[800],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
+                    if (trailingIcon != null) Icon(trailingIcon, color: textColor, size: 24),
                   ],
                 ),
               );
             }),
 
-            const SizedBox(height: 8),
-
-            // (Tùy chọn) Thêm dòng tóm tắt số đáp án đúng
-            if (correctIndices.isNotEmpty)
+            // Hiển thị đáp án đúng nếu sai
+            if (!isCorrect && correctIndices.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.green[700],
-                      fontStyle: FontStyle.italic,
+                padding: const EdgeInsets.only(top: 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, color: AppColor.primary, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Đáp án đúng: ${correctIndices.map((i) => submission.options[i]).join(', ')}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColor.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    children: [
-                      const TextSpan(text: 'Đáp án đúng: '),
-                      ...List.generate(correctIndices.length, (idx) {
-                        final optionText = q.options[correctIndices[idx]];
-                        return [
-                          TextSpan(
-                            text: optionText,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF388E3C), // green[800]
-                            ),
-                          ),
-                          if (idx < correctIndices.length - 1) const TextSpan(text: ', '),
-                        ];
-                      }).expand((x) => x),
-                    ],
-                  ),
+                  ],
                 ),
               ),
           ],
@@ -239,20 +284,17 @@ class _ExamReviewPageState extends ConsumerState<ExamReviewPage> {
     );
   }
 
-  // Hàm helper để parse correctAnswers từ string dạng "[0,2]" hoặc "[3]"
-  List<int> _parseCorrectAnswers(String correctAnswersStr) {
+  List<int> _parseIndices(String? str) {
+    if (str == null || str.isEmpty) return [];
     try {
-      // Loại bỏ dấu ngoặc vuông và tách theo dấu phẩy
-      final cleaned = correctAnswersStr.replaceAll('[', '').replaceAll(']', '').trim();
-
+      final cleaned = str.replaceAll('[', '').replaceAll(']', '').trim();
       if (cleaned.isEmpty) return [];
-
       return cleaned
           .split(',')
           .map((e) => int.tryParse(e.trim()) ?? -1)
-          .where((index) => index >= 0)
+          .where((i) => i >= 0)
           .toList();
-    } catch (e) {
+    } catch (_) {
       return [];
     }
   }

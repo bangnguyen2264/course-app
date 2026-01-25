@@ -51,7 +51,7 @@ class DashboardShellPage extends StatelessWidget {
     final currentIndex = _locationToTabIndex(location);
 
     return Scaffold(
-      body: SafeArea(child: child),
+      body: child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) => _onTap(context, index),
@@ -68,4 +68,3 @@ class DashboardShellPage extends StatelessWidget {
     );
   }
 }
-

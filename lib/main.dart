@@ -20,6 +20,15 @@ void main() async {
   // Setup dependencies
   await setupDependencies();
 
+  // Thiết lập màu status bar mặc định cho toàn hệ thống
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: AppColor.primary, // hoặc AppColor.scaffoldBackground nếu muốn nền trắng
+      statusBarIconBrightness: Brightness.light, // icon sáng trên nền tối
+      statusBarBrightness: Brightness.dark, // cho iOS
+    ),
+  );
+
   runApp(ProviderScope(child: const MyApp()));
 }
 

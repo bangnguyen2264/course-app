@@ -103,7 +103,7 @@ class ExamResultPage extends StatelessWidget {
                   label: const Text('Xem lại đáp án', style: TextStyle(fontSize: 16)),
                   onPressed: () {
                     if (result != null) {
-                      context.pushReplacement(AppRoutes.examReview, extra: result!.examId);
+                      context.pushReplacement(AppRoutes.examReview, extra: result);
                     }
                   },
                 ),
