@@ -9,7 +9,7 @@ import 'package:course/domain/usecases/get_user_usecase.dart';
 import 'package:course/presentation/controllers/home/home_controller.dart';
 import 'package:course/presentation/controllers/home/home_state.dart';
 import 'package:course/presentation/pages/home/widgets/subject_card.dart';
-import 'package:course/presentation/pages/profile/widgets/profile_avatar.dart';
+import 'package:course/presentation/widgets/profile_avatar.dart';
 import 'package:course/presentation/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

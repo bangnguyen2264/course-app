@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 /// Base abstract values from 0 -> 200
 abstract class AppValues {

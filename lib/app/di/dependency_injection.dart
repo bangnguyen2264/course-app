@@ -12,6 +12,7 @@ import 'package:course/domain/repositories/user_repository.dart';
 import 'package:course/domain/usecases/get_avatar_usecase.dart';
 import 'package:course/domain/usecases/get_chapter_usecase.dart';
 import 'package:course/domain/usecases/get_exam_list_usecase.dart';
+import 'package:course/domain/usecases/get_exam_result_list_usecase.dart';
 import 'package:course/domain/usecases/get_lesson_section_usecase.dart';
 import 'package:course/domain/usecases/get_review_quiz.dart';
 import 'package:course/domain/usecases/get_subject_usecase.dart';
@@ -91,6 +92,13 @@ Future<void> setupDependencies() async {
 
   // UseCases - Exam
   getIt.registerFactory<GetExamListUsecase>(() => GetExamListUsecase(getIt<ExamReposiroty>()));
+
+  // UseCases - Exam Result
+  getIt.registerFactory<GetExamResultListUseCase>(
+    () => GetExamResultListUseCase(getIt<ExamResultRepository>()),
+  );
+
+  // UseCases - Submit Exam Result
   getIt.registerFactory<SubmitExamResultUsecase>(
     () => SubmitExamResultUsecase(getIt<ExamResultRepository>()),
   );

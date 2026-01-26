@@ -145,10 +145,7 @@ class ExamListPage extends HookConsumerWidget {
         itemBuilder: (context, exam, index) {
           return ExamCard(
             exam: exam,
-            onTap: () {
-              // Navigate to exam take page
-              context.push(AppRoutes.examTake, extra: exam);
-            },
+            onTap: () async => context.push(AppRoutes.examHistory, extra: exam),
           );
         },
         footer: const SizedBox(height: 80), // Spacing for bottom navigation

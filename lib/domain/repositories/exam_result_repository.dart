@@ -2,6 +2,7 @@ import 'package:course/app/resources/app_api.dart';
 import 'package:course/domain/entities/api_response.dart';
 import 'package:course/domain/entities/exam/exam.dart';
 import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result_detail.dart';
 import 'package:course/domain/entities/exam_result.dart/exam_result_form_submit.dart';
 import 'package:course/domain/repositories/query_param/exam_result_query_param.dart';
 import 'package:dio/dio.dart';
@@ -18,6 +19,6 @@ abstract class ExamResultRepository {
   Future<ApiResponse<ExamResult>> getExamResult(@Queries() ExamResultQueryParam queryParams);
 
   @POST(AppApi.examResultSubmit)
-  Future<ExamResult> submitExamResult(@Body() ExamResultFormSubmit body);
+  Future<ExamResultDetail> submitExamResult(@Body() ExamResultFormSubmit body);
 
 }

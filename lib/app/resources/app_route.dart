@@ -1,8 +1,9 @@
 import 'package:course/domain/entities/exam/exam.dart';
-import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result_detail.dart';
 import 'package:course/domain/entities/lesson/lesson.dart';
 import 'package:course/domain/entities/subject/subject.dart';
 import 'package:course/presentation/pages/chapter/chapter_page.dart';
+import 'package:course/presentation/pages/exam_history/exam_history_page.dart';
 import 'package:course/presentation/pages/exam_list/exam_list_page.dart';
 import 'package:course/presentation/pages/exam_result/exam_result_page.dart';
 import 'package:course/presentation/pages/exam_review/exam_review_page.dart';
@@ -18,7 +19,7 @@ import 'package:course/presentation/pages/get_started/get_started_page.dart';
 import 'package:course/presentation/pages/splash_loading_page.dart';
 import 'package:course/presentation/pages/dashboard/dashboard_shell_page.dart';
 import 'package:course/presentation/pages/exam/exam_page.dart';
-import 'package:course/presentation/pages/profile/profile_page.dart';
+import 'package:course/presentation/pages/setting/setting_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -62,9 +63,9 @@ class AppRouter {
             builder: (context, state) => const ExamPage(),
           ),
           GoRoute(
-            path: AppRoutes.profile,
-            name: 'profile',
-            builder: (context, state) => const ProfilePage(),
+            path: AppRoutes.setting,
+            name: 'settings',
+            builder: (context, state) => const SettingsPage(),
           ),
         ],
       ),
@@ -134,15 +135,29 @@ class AppRouter {
         path: AppRoutes.examResult,
         name: 'exam-result',
         builder: (context, state) {
-          final result = state.extra as ExamResult?;
+          final result = state.extra as ExamResultDetail?;
           return ExamResultPage(result: result);
         },
       ),
+
+      // Exam History routes
+      GoRoute(
+        path: AppRoutes.examHistory,
+        name: 'exam-history',
+        builder: (context, state) {
+          final examId = state.extra as Exam?;
+          return ExamHistoryPage(exam: examId!);
+        },
+      ),
+
+
+
+      // Exam Review routes
       GoRoute(
         path: AppRoutes.examReview,
         name: 'exam-review',
         builder: (context, state) {
-          final examResult = state.extra as ExamResult?;
+          final examResult = state.extra as ExamResultDetail?;
           if (examResult == null) {
             return const Scaffold(body: Center(child: Text('Không có examResult.')));
           }
@@ -171,11 +186,6 @@ class AppRouter {
         name: 'edit-profile',
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('Edit Profile - TODO'))),
-      ),
-      GoRoute(
-        path: AppRoutes.settings,
-        name: 'settings',
-        builder: (context, state) => const Scaffold(body: Center(child: Text('Settings - TODO'))),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

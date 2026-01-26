@@ -24,7 +24,9 @@ abstract class AppRoutes {
   static const String examList = '/exam-list';
   static const String examTake = '/exam-take';
   static const String examResult = '/exam-result';
+  static const String examHistory = '/exam-history';
   static const String examReview = '/exam-review';
+  static const String examReviewBeforeSubmit = '/exam-review-before-submit';
 
   // Quiz routes
   static const String quizList = '/quizzes';
@@ -34,7 +36,7 @@ abstract class AppRoutes {
   // Profile routes
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
-  static const String settings = '/settings';
+  static const String setting = '/setting';
   static const String changePassword = '/change-password';
 
   // Other routes

@@ -125,7 +125,7 @@ class _VideoBlock extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             AppVideoPlayer(videoUrl: videoUrl!, autoPlay: false, looping: false),
-            _PlayOverlay(),
+            // _PlayOverlay(),
           ],
         ),
       ),
@@ -133,21 +133,21 @@ class _VideoBlock extends StatelessWidget {
   }
 }
 
-class _PlayOverlay extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.35),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.65), width: 1.4),
-      ),
-      child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34),
-    );
-  }
-}
+// class _PlayOverlay extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: 64,
+//       height: 64,
+//       decoration: BoxDecoration(
+//         color: Colors.black.withOpacity(0.35),
+//         shape: BoxShape.circle,
+//         border: Border.all(color: Colors.white.withOpacity(0.65), width: 1.4),
+//       ),
+//       child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34),
+//     );
+//   }
+// }
 
 class _AudioBlock extends StatelessWidget {
   final String audioLabel;

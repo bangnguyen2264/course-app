@@ -1,5 +1,5 @@
 import 'package:course/app/resources/app_style.dart';
-import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result_detail.dart';
 import 'package:course/domain/quiz/quiz_submission_result.dart';
 import 'package:course/presentation/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:course/app/resources/app_color.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ExamReviewPage extends ConsumerWidget {
-  final ExamResult examResult;
+  final ExamResultDetail examResult;
 
   const ExamReviewPage({super.key, required this.examResult});
 

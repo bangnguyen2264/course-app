@@ -1,5 +1,5 @@
 import 'package:course/app/di/dependency_injection.dart';
-import 'package:course/domain/usecases/get_user_usecase.dart';
+import 'package:course/app/services/app_preferences.dart';
 import 'package:course/domain/usecases/logout_usecase.dart';
 import 'package:course/presentation/controllers/profile/profile_state.dart';
 import 'package:dio/dio.dart';
@@ -7,10 +7,10 @@ import 'package:flutter_riverpod/legacy.dart';
 
 /// ViewModel cho Profile - quản lý logic và state
 class ProfileController extends StateNotifier<ProfileState> {
-  final GetUserUseCase _getUserUseCase;
+  final AppPreferences _appPreferences;
   final LogoutUseCase _logoutUseCase;
 
-  ProfileController(this._getUserUseCase, this._logoutUseCase) : super(const ProfileState());
+  ProfileController(this._appPreferences, this._logoutUseCase) : super(const ProfileState());
 
   /// Load thông tin user
   Future<void> loadUser() async {
@@ -19,8 +19,9 @@ class ProfileController extends StateNotifier<ProfileState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final user = await _getUserUseCase.execute();
-      state = state.copyWith(isLoading: false, user: user);
+      final username = await _appPreferences.getUserName() ?? '';
+      final avatarUrl = await _appPreferences.getAvatarUrl() ?? '';
+      state = state.copyWith(isLoading: false, username: username, avatarUrl: avatarUrl);
     } on DioException catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -58,5 +59,5 @@ class ProfileController extends StateNotifier<ProfileState> {
 
 /// Provider cho ProfileController
 final profileControllerProvider = StateNotifierProvider<ProfileController, ProfileState>((ref) {
-  return ProfileController(getIt<GetUserUseCase>(), getIt<LogoutUseCase>());
+  return ProfileController(getIt<AppPreferences>(), getIt<LogoutUseCase>());
 });

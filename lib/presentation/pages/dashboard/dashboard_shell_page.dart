@@ -25,7 +25,7 @@ class DashboardShellPage extends StatelessWidget {
       label: 'Profile',
       icon: Icons.person_outline,
       selectedIcon: Icons.person,
-      location: AppRoutes.profile,
+      location: AppRoutes.setting,
     ),
   ];
 

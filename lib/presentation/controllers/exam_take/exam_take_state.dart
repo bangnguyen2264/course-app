@@ -4,9 +4,11 @@ import 'package:course/domain/quiz/quiz.dart';
 
 class ExamTakeState {
   final int? examId;
+  final int totalQuestions;
   final List<Quiz> questions;
   final int currentIndex;
   final Map<int, Set<int>> selections; // questionId -> set of selected option indices
+  final Set<int> flagged; // questionId đã flag
   final bool isLoading;
   final String? errorMessage;
   final int? totalSeconds; // exam duration in seconds
@@ -15,9 +17,11 @@ class ExamTakeState {
 
   const ExamTakeState({
     this.examId,
+    this.totalQuestions = 0,
     this.questions = const [],
     this.currentIndex = 0,
     this.selections = const {},
+    this.flagged = const {},
     this.isLoading = false,
     this.errorMessage,
     this.totalSeconds,
@@ -27,9 +31,11 @@ class ExamTakeState {
 
   ExamTakeState copyWith({
     int? examId,
+    int? totalQuestions,
     List<Quiz>? questions,
     int? currentIndex,
     Map<int, Set<int>>? selections,
+    Set<int>? flagged,
     bool? isLoading,
     String? errorMessage,
     int? totalSeconds,
@@ -38,9 +44,11 @@ class ExamTakeState {
   }) {
     return ExamTakeState(
       examId: examId ?? this.examId,
+      totalQuestions: totalQuestions ?? this.totalQuestions,
       questions: questions ?? this.questions,
       currentIndex: currentIndex ?? this.currentIndex,
       selections: selections ?? this.selections,
+      flagged: flagged ?? this.flagged,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
       totalSeconds: totalSeconds ?? this.totalSeconds,

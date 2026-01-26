@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:course/app/di/dependency_injection.dart';
 import 'package:course/app/services/app_preferences.dart';
-import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result_detail.dart';
 import 'package:course/domain/entities/exam_result.dart/exam_result_form_submit.dart';
 import 'package:course/domain/usecases/get_quiz_list_usecase.dart';
 import 'package:course/domain/usecases/submit_exam_result_usecase.dart';
@@ -10,6 +10,16 @@ import 'package:course/presentation/controllers/exam_take/exam_take_state.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 class ExamTakeController extends StateNotifier<ExamTakeState> {
+  void toggleFlag(int questionId) {
+    final flagged = Set<int>.from(state.flagged);
+    if (flagged.contains(questionId)) {
+      flagged.remove(questionId);
+    } else {
+      flagged.add(questionId);
+    }
+    state = state.copyWith(flagged: flagged);
+  }
+
   final GetQuizListUsecase _getQuizList;
   final AppPreferences _appPreferences;
   final SubmitExamResultUsecase _submitUsecase;
@@ -31,8 +41,13 @@ class ExamTakeController extends StateNotifier<ExamTakeState> {
     if (examId == null) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final result = await _getQuizList(examId: examId);
-      state = state.copyWith(isLoading: false, questions: result.data, currentIndex: 0);
+      final result = await _getQuizList(examId: examId, entry: 60);
+      state = state.copyWith(
+        isLoading: false,
+        questions: result.data,
+        currentIndex: 0,
+        totalQuestions: result.total,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -90,7 +105,7 @@ class ExamTakeController extends StateNotifier<ExamTakeState> {
     state = state.copyWith(currentIndex: state.currentIndex - 1);
   }
 
-  Future<ExamResult?> submit({int? timeTaken}) async {
+  Future<ExamResultDetail?> submit({int? timeTaken}) async {
     final examId = state.examId;
     if (examId == null) {
       state = state.copyWith(isSubmitting: false, errorMessage: 'Exam ID không hợp lệ.');

@@ -1,5 +1,5 @@
 import 'package:course/app/constants/app_routes.dart';
-import 'package:course/domain/entities/exam_result.dart/exam_result.dart';
+import 'package:course/domain/entities/exam_result.dart/exam_result_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/info_card.dart';
@@ -7,7 +7,7 @@ import 'widgets/exam_score_circle.dart';
 import 'exam_result_utils.dart';
 
 class ExamResultPage extends StatelessWidget {
-  final ExamResult? result;
+  final ExamResultDetail? result;
   const ExamResultPage({super.key, this.result});
 
   @override
